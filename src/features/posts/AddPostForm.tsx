@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNewPost } from "./postSlice";
 import { selectAllUsers } from "../users/usersSlice";
 import { AppDispatch } from "../../app/store";
-
+import { useNavigate } from "react-router-dom";
 function AddPostForm() {
   const dispatch = useDispatch<AppDispatch>();
-
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
@@ -30,6 +30,7 @@ function AddPostForm() {
         setTitle("");
         setContent("");
         setUserId("");
+        navigate("/");
       } catch (err) {
         console.error("Failed to save the post", err);
       } finally {
@@ -38,7 +39,8 @@ function AddPostForm() {
     }
   };
 
-  const canSave = [title, content, userId].every(Boolean) && addRequestStatus;
+  const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === "idle";
 
   const usersOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
@@ -48,10 +50,11 @@ function AddPostForm() {
 
   return (
     <section>
-      <h2>Add a New Post</h2>
-      <form>
+      <h2 className="text-2xl">Add a New Post</h2>
+      <form className="flex flex-col">
         <label htmlFor="postTitle">Post Title:</label>
         <input
+          className="p-2  bg-gray-300"
           type="text"
           id="postTitle"
           name="postTitle"
@@ -59,18 +62,29 @@ function AddPostForm() {
           onChange={handleTitleChange}
         />
         <label htmlFor="postAuthor">Author:</label>
-        <select id="postAuthor" value={userId} onChange={handleAuthorChange}>
+        <select
+          id="postAuthor"
+          value={userId}
+          onChange={handleAuthorChange}
+          className="p-2  bg-gray-300"
+        >
           <option value=""></option>
           {usersOptions}
         </select>
         <label htmlFor="postContent">Content:</label>
         <textarea
+          className="p-2  bg-gray-300"
           id="postContent"
           name="postContent"
           value={content}
           onChange={handleContentChange}
         />
-        <button type="button" onClick={handlePostSave} disabled={!canSave}>
+        <button
+          className="bg-green-400 mt-1"
+          type="button"
+          onClick={handlePostSave}
+          disabled={!canSave}
+        >
           Save Post
         </button>
       </form>
