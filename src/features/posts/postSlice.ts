@@ -15,7 +15,7 @@ export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
 });
 export const addNewPost = createAsyncThunk(
   "posts/addNewPost",
-  async (newPostData: { title: string; body: string; userId: string }) => {
+  async (newPostData: { title: string; body: string; userId: number }) => {
     const response = await axios.post(POSTS_URL, newPostData);
     return response.data;
   }
@@ -25,7 +25,7 @@ export const updatePost = createAsyncThunk(
   async (initialPost: {
     title: string | undefined;
     body: string | undefined;
-    userId: string | undefined;
+    userId: number | undefined;
     id: number;
     reactions: {
       thumbsUp: number;
@@ -114,7 +114,7 @@ const postSlice = createSlice({
         action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
         // End fix for fake API post IDss
 
-        action.payload.userId = Number(action.payload.userId);
+        // action.payload.userId = Number(action.payload.userId);
         action.payload.date = new Date().toISOString();
         action.payload.reactions = {
           thumbsUp: 0,
@@ -134,7 +134,7 @@ const postSlice = createSlice({
         }
         const { id } = action.payload;
         action.payload.date = new Date().toISOString();
-        action.payload.userId = Number(action.payload.userId);
+        // action.payload.userId = Number(action.payload.userId);
         const posts = state.posts.filter((post) => post.id !== id);
         state.posts = [...posts, action.payload];
       })
@@ -155,7 +155,7 @@ export interface Posts {
   id: number;
   title: string;
   body: string;
-  userId: string;
+  userId: number;
   date: string;
   reactions: {
     thumbsUp: number;

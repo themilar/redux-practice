@@ -18,7 +18,7 @@ const UpdatePostForm = () => {
 
   const [title, setTitle] = useState(post?.title);
   const [content, setContent] = useState(post?.body);
-  const [userId, setUserId] = useState(post?.userId);
+  const [userId, setUserId] = useState(Number(post?.userId));
   const [requestStatus, setRequestStatus] = useState("idle");
 
   const dispatch = useDispatch<AppDispatch>();
@@ -36,7 +36,7 @@ const UpdatePostForm = () => {
   const handleContentChange = (e: SyntheticEvent<HTMLTextAreaElement>) =>
     setContent((e.target as HTMLInputElement).value);
   const handleAuthorChange = (e: SyntheticEvent<HTMLSelectElement>) =>
-    setUserId((e.target as HTMLInputElement).value);
+    setUserId(Number((e.target as HTMLInputElement).value));
 
   const canSave =
     [title, content, userId].every(Boolean) && requestStatus === "idle";
@@ -57,7 +57,7 @@ const UpdatePostForm = () => {
 
         setTitle("");
         setContent("");
-        setUserId("");
+        setUserId(0);
         navigate(`/post/${postId}`);
       } catch (err) {
         console.error("Failed to save the post", err);
@@ -80,7 +80,7 @@ const UpdatePostForm = () => {
 
       setTitle("");
       setContent("");
-      setUserId("");
+      setUserId(0);
       navigate("/");
     } catch (err) {
       console.error("Failed to delete the post", err);

@@ -10,7 +10,7 @@ function AddPostForm() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(0);
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
   const users = useSelector(selectAllUsers);
 
@@ -19,7 +19,7 @@ function AddPostForm() {
   const handleContentChange = (e: SyntheticEvent<HTMLTextAreaElement>) =>
     setContent((e.target as HTMLInputElement).value);
   const handleAuthorChange = (e: SyntheticEvent<HTMLSelectElement>) =>
-    setUserId((e.target as HTMLInputElement).value);
+    setUserId(Number((e.target as HTMLInputElement).value));
 
   const handlePostSave = () => {
     if (canSave) {
@@ -29,7 +29,7 @@ function AddPostForm() {
 
         setTitle("");
         setContent("");
-        setUserId("");
+        setUserId(0);
         navigate("/");
       } catch (err) {
         console.error("Failed to save the post", err);
