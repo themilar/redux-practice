@@ -51,7 +51,7 @@ function AddPostForm() {
   return (
     <section>
       <h2 className="text-2xl">Add a New Post</h2>
-      <form className="flex flex-col">
+      <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="postTitle">Post Title:</label>
         <input
           className="p-2  bg-gray-300"

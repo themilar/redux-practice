@@ -16,6 +16,11 @@ function NavBar() {
               Post
             </Link>
           </li>
+          <li>
+            <Link to="user" className="text-slate-100 text-2xl">
+              User
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

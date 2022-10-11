@@ -1,8 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  createSelector,
+} from "@reduxjs/toolkit";
 import sub from "date-fns/sub";
 import { RootState } from "../../app/store";
 import axios from "axios";
 const POSTS_URL = "https://jsonplaceholder.typicode.com/posts";
+
 const initialState = {
   posts: [],
   status: "idle",
@@ -176,5 +181,8 @@ export const selectPostsError = (state: RootState) => state.posts.error;
 export const selectPostsStatus = (state: RootState) => state.posts.status;
 export const selectPostsById = (state: RootState, postId: number) =>
   state.posts.posts.find((post) => post.id === postId);
-
+export const selectPostsByUser = createSelector(
+  [selectAllPosts, (state, userId) => userId],
+  (posts, userId) => posts.filter((post) => post.userId === userId)
+);
 export default postSlice.reducer;

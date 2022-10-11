@@ -1,7 +1,10 @@
 import { useSelector } from "react-redux";
 import { selectAllUsers } from "../users/usersSlice";
 
-export const PostAuthor = ({ userId }: { userId: string }) => {
+interface PostAuthorProps {
+  userId: number;
+}
+export const PostAuthor = ({ userId }: PostAuthorProps) => {
   const users = useSelector(selectAllUsers);
 
   const author = users.find((user) => user.id === userId);
