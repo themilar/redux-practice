@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
-import { selectPostsById } from "./postSlice";
+import { selectPostById } from "./postSlice";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButton";
@@ -9,7 +9,7 @@ import { RootState } from "../../app/store";
 function PostDetailPage() {
   const { postId } = useParams();
   const post = useSelector((state: RootState) =>
-    selectPostsById(state, Number(postId))
+    selectPostById(state, Number(postId))
   );
   if (!post) {
     return (

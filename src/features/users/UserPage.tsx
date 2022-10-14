@@ -3,12 +3,15 @@ import { selectUserById } from "./usersSlice";
 import { selectAllPosts, selectPostsByUser } from "../posts/postSlice";
 
 import { useParams, Link } from "react-router-dom";
+import { RootState } from "../../app/store";
 
 function UserPage() {
   const { userId } = useParams();
-  const user = useSelector((state) => selectUserById(state, Number(userId)));
+  const user = useSelector((state: RootState) =>
+    selectUserById(state, Number(userId))
+  );
 
-  const postsForUser = useSelector((state) =>
+  const postsForUser = useSelector((state: RootState) =>
     selectPostsByUser(state, Number(userId))
   );
   const postTitles = postsForUser.map((post) => (

@@ -2,17 +2,19 @@ import {
   createAsyncThunk,
   createSlice,
   createSelector,
+  createEntityAdapter,
 } from "@reduxjs/toolkit";
 import sub from "date-fns/sub";
 import { RootState } from "../../app/store";
 import axios from "axios";
 const POSTS_URL = "https://jsonplaceholder.typicode.com/posts";
-
-const initialState = {
-  posts: [],
+const postsAdapter = createEntityAdapter({
+  sortComparer: (a: Posts, b: Posts) => b.date.localeCompare(a.date),
+});
+const initialState = postsAdapter.getInitialState({
   status: "idle",
-  error: undefined,
-} as PostsState;
+  error: "",
+});
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   const response = await axios(POSTS_URL);
@@ -71,9 +73,7 @@ const postSlice = createSlice({
     reactionAdded(state, action) {
       const { postId, reaction }: { postId: string; reaction: string } =
         action.payload;
-      const existingPost = state.posts.find(
-        (post) => post.id === Number(postId)
-      );
+      const existingPost = state.entities[postId];
       if (existingPost) {
         existingPost.reactions[
           reaction as keyof typeof existingPost.reactions
@@ -100,23 +100,23 @@ const postSlice = createSlice({
           };
           return post;
         });
-        state.posts = state.posts.concat(loadedPosts);
+        postsAdapter.upsertMany(state, action.payload);
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.status = "rejected";
-        state.error = action.error.message;
+        state.status = "failed";
+        state.error = action.error.message!;
       })
       .addCase(addNewPost.fulfilled, (state, action) => {
         // Fix for API post IDs:
         // Creating sortedPosts & assigning the id
         // would be not be needed if the fake API
         // returned accurate new post IDs
-        const sortedPosts = state.posts.sort((a, b) => {
-          if (a.id > b.id) return 1;
-          if (a.id < b.id) return -1;
-          return 0;
-        });
-        action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
+        // const sortedPosts = state.posts.sort((a, b) => {
+        //   if (a.id > b.id) return 1;
+        //   if (a.id < b.id) return -1;
+        //   return 0;
+        // });
+        // action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
         // End fix for fake API post IDss
 
         // action.payload.userId = Number(action.payload.userId);
@@ -129,7 +129,7 @@ const postSlice = createSlice({
           coffee: 0,
         };
         console.log(action.payload);
-        state.posts.push(action.payload);
+        postsAdapter.addOne(state, action.payload);
       })
       .addCase(updatePost.fulfilled, (state, action) => {
         if (!action.payload.id) {
@@ -137,11 +137,9 @@ const postSlice = createSlice({
           console.log();
           return;
         }
-        const { id } = action.payload;
         action.payload.date = new Date().toISOString();
         // action.payload.userId = Number(action.payload.userId);
-        const posts = state.posts.filter((post) => post.id !== id);
-        state.posts = [...posts, action.payload];
+        postsAdapter.upsertOne(state, action.payload);
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         if (!action.payload?.id) {
@@ -150,8 +148,7 @@ const postSlice = createSlice({
           return;
         }
         const { id } = action.payload;
-        const posts = state.posts.filter((post) => post.id !== id);
-        state.posts = posts;
+        postsAdapter.removeOne(state, id);
       });
   },
 });
@@ -176,13 +173,17 @@ export interface PostsState {
   status: string;
 }
 export const { reactionAdded } = postSlice.actions;
-export const selectAllPosts = (state: RootState) => state.posts.posts;
+export const {
+  selectAll: selectAllPosts,
+  selectById: selectPostById,
+  selectIds: selectPostIds,
+  // Pass in a selector that returns the posts slice of state
+} = postsAdapter.getSelectors((state: RootState) => state.posts);
+
 export const selectPostsError = (state: RootState) => state.posts.error;
 export const selectPostsStatus = (state: RootState) => state.posts.status;
-export const selectPostsById = (state: RootState, postId: number) =>
-  state.posts.posts.find((post) => post.id === postId);
 export const selectPostsByUser = createSelector(
   [selectAllPosts, (state, userId) => userId],
-  (posts, userId) => posts.filter((post) => post.userId === userId)
+  (posts, userId) => posts.filter((post: Posts) => post.userId === userId)
 );
 export default postSlice.reducer;

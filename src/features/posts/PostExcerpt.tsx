@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
-
+import { RootState } from "../../app/store";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButton";
-import { Posts } from "./postSlice";
+import { Posts, selectPostById } from "./postSlice";
 import PostAuthor from "./PostAuthor";
-function PostExcerpt({ post }: { post: Posts }) {
-  return (
+import { useSelector } from "react-redux";
+import { EntityId, EntityState } from "@reduxjs/toolkit";
+function PostExcerpt({ postId }: { postId: EntityId }) {
+  const post = useSelector((state: RootState) => selectPostById(state, postId));
+
+  return !post ? (
+    <></>
+  ) : (
     <article className="border-y-2 border-sky-500 my-2 p-4">
       <h3 className="text-2xl font-bold">{post.title}</h3>
       <p>{post.body?.substring(0, 75)}...</p>

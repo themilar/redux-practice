@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectPostsById, updatePost, deletePost } from "./postSlice";
+import { selectPostById, updatePost, deletePost } from "./postSlice";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { RootState } from "../../app/store";
@@ -12,7 +12,7 @@ const UpdatePostForm = () => {
   const navigate = useNavigate();
 
   const post = useSelector((state: RootState) =>
-    selectPostsById(state, Number(postId))
+    selectPostById(state, Number(postId))
   );
   const users = useSelector(selectAllUsers);
 
